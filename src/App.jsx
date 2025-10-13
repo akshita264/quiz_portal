@@ -11,7 +11,7 @@ import Login from "./auth/Login";
 import Signup from "./auth/Signup";
 import Quiz from "./Quiz";
 
-
+import PreQuizLayout from "./pages/quiz/preQuizSetup/prequizlayout";
 import InstructionsPage from "./pages/quiz/preQuizSetup/instructions";
 import PermissionsPage from "./pages/quiz/preQuizSetup/permissions";
 import CameraSetupPage from "./pages/quiz/preQuizSetup/camerasetup";
@@ -35,12 +35,13 @@ function App() {
               }
             />
             {/* Pre-Quiz Setup routes */}
-          
+          <Route path="/quiz" element={<PreQuizLayout />}>
             <Route path="/quiz/instructions" element={<InstructionsPage />} />
             <Route path="/quiz/permissions" element={<PermissionsPage />} />
             <Route path="/quiz/camera" element={<CameraSetupPage />} />
             <Route path="/quiz/ready" element={<ReadyPage />} />
-         
+             <Route index element={<InstructionsPage />} />
+         </Route>
 
           </Routes>
           
