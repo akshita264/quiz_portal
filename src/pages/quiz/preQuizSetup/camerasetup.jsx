@@ -28,28 +28,30 @@ export default function CameraSetupPage() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4 py-10">
-      <div className="max-w-4xl w-full bg-white p-8 rounded-2xl shadow-md border border-gray-100">
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-8">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4 py-6 sm:py-10 pt-2">
+      <div className="max-w-4xl w-full bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-md border border-gray-100">
+        <h2 className="text-xl sm:text-2xl font-semibold text-center text-gray-800 mb-6 sm:mb-8">
           Camera Setup
         </h2>
 
         {/* Video Preview Box */}
-        <div className="flex justify-center mb-8">
-          <div className="rounded-xl overflow-hidden border border-gray-300 shadow-sm">
+        <div className="flex justify-center mb-6 sm:mb-8">
+          <div className="rounded-xl overflow-hidden border border-gray-300 shadow-sm w-full sm:w-[500px] md:w-[600px] aspect-video bg-black">
             <video
               ref={videoRef}
               autoPlay
               playsInline
-              className="w-[600px] h-[400px] object-cover bg-black"
+              className="w-full h-full object-cover"
             />
           </div>
         </div>
 
         {/* Camera Requirements Box */}
-        <div className="bg-blue-50 border border-blue-200 text-blue-900 p-6 rounded-xl mb-8">
-          <p className="font-semibold text-lg mb-2">Camera Requirements:</p>
-          <ul className="list-disc list-inside text-base space-y-1">
+        <div className="bg-blue-50 border border-blue-200 text-blue-900 p-4 sm:p-6 rounded-xl mb-6 sm:mb-8">
+          <p className="font-semibold text-base sm:text-lg mb-2">
+            Camera Requirements:
+          </p>
+          <ul className="list-disc list-inside text-sm sm:text-base space-y-1">
             <li>Position yourself in the center of the frame</li>
             <li>Ensure your face is clearly visible</li>
             <li>Make sure the lighting is good</li>
@@ -61,7 +63,7 @@ export default function CameraSetupPage() {
         <div className="flex justify-center">
           <button
             onClick={() => navigate("/quiz/ready")}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg shadow-sm transition-all duration-200"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 sm:px-6 py-2 sm:py-2.5 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
           >
             Start Face Detection
           </button>
