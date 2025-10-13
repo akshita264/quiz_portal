@@ -40,32 +40,49 @@ const PreQuizLayout = () => {
           Let's make sure everything is working properly before you start the quiz.
         </p>
 
+        {/* Step Indicator */}
         {/* Step Tracker */}
-        <div className="flex justify-between items-center mb-10">
-          {steps.map((step, index) => {
-            const active = location.pathname === step.path;
-            return (
-              <div key={index} className="flex-1 text-center">
-                <div
-                  className={`mx-auto w-8 h-8 flex items-center justify-center rounded-full border-2 ${
-                    active
-                      ? "border-blue-500 bg-blue-500 text-white"
-                      : "border-gray-300 text-gray-600"
-                  }`}
-                >
-                  {index + 1}
-                </div>
-                <p
-                  className={`mt-2 text-sm ${
-                    active ? "text-blue-600 font-semibold" : "text-gray-500"
-                  }`}
-                >
-                  {step.label}
-                </p>
-              </div>
-            );
-          })}
+<div className="w-full max-w-3xl mx-auto mb-10">
+  <div className="relative flex justify-between items-center">
+    {/* Background line */}
+    <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-gray-200 -z-10"></div>
+
+    {/* Step indicators */}
+    {steps.map((step, index) => {
+      const active = location.pathname === step.path;
+      const completed =
+        steps.findIndex((s) => s.path === location.pathname) > index;
+
+      return (
+        <div key={index} className="flex flex-col items-center w-1/4">
+          <div
+            className={`w-9 h-9 flex items-center justify-center rounded-full border-2 transition-all duration-300 ${
+              active
+                ? "border-blue-500 bg-blue-500 text-white"
+                : completed
+                ? "border-blue-400 bg-blue-400 text-white"
+                : "border-gray-300 bg-white text-gray-600"
+            }`}
+          >
+            {index + 1}
+          </div>
+          <p
+            className={`mt-2 text-sm ${
+              active
+                ? "text-blue-600 font-semibold"
+                : completed
+                ? "text-blue-500"
+                : "text-gray-500"
+            }`}
+          >
+            {step.label}
+          </p>
         </div>
+      );
+    })}
+  </div>
+</div>
+
 
         {/* Page-specific content */}
         <Outlet />
