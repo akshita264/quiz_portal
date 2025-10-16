@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { Bookmark } from "lucide-react"
 import axios from "axios"
+import { useNavigate } from "react-router-dom";
 
 const QuizQuestion = ({ userId }) => {
   const totalQuestions = 20
@@ -260,6 +261,7 @@ const QuizQuestion = ({ userId }) => {
       console.warn("Fullscreen request failed:", err)
     }
   }
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-50 select-none pointer-events-auto">
@@ -288,7 +290,8 @@ const QuizQuestion = ({ userId }) => {
               </svg>
               <span className="text-lg font-semibold text-gray-700">{formatTime(timeLeft)}</span>
             </div>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded transition-all">
+            <button  onClick={() => navigate("/quiz/submit")}
+ className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded transition-all">
               Submit Quiz
             </button>
           </div>

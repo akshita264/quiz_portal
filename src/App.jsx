@@ -17,6 +17,7 @@ import PermissionsPage from "./pages/quiz/preQuizSetup/permissions";
 import CameraSetupPage from "./pages/quiz/preQuizSetup/camerasetup";
 import ReadyPage from "./pages/quiz/preQuizSetup/ready";
 import QuestionPage from "./pages/quiz/inQuizSetup/QuestionPage";
+import Submit from "./pages/quiz/inQuizSetup/Submit";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
          </Route>
          {/*Question route */}
          <Route path="/quiz/questions" element={<QuestionPage />} />
+          <Route path="/quiz/submit" element={<Submit />} />
 
           </Routes>
           
