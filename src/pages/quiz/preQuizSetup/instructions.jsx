@@ -5,6 +5,7 @@ const InstructionsPage = () => {
   const navigate = useNavigate();
 
   const handleContinue = () => {
+    localStorage.setItem('instructionsComplete', 'true');
     navigate("/quiz/permissions");
   };
 

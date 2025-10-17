@@ -36,7 +36,8 @@ const Login = () => {
     try {
       const result = await login(formData);
       if (result.success) {
-        navigate('/quiz');
+        localStorage.removeItem('instructionsComplete');
+        navigate('/quiz/instructions');
       } else {
         setError(result.error || 'Login failed');
       }

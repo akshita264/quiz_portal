@@ -80,7 +80,7 @@ export default function ReadyPage() {
           </button>
 
           <button
-            onClick={() => navigate("/quiz/start")}
+            onClick={() => navigate("/start")}
             className="w-full sm:w-auto px-5 sm:px-6 md:px-8 py-2.5 sm:py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-sm font-medium text-xs sm:text-sm md:text-base"
           >
             Start Quiz

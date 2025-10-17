@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { Bookmark } from "lucide-react"
 import axios from "axios"
+import { getQuestions } from "../../../services/api"
 import { useNavigate } from "react-router-dom";
 
 const QuizQuestion = ({ userId }) => {
@@ -97,7 +98,23 @@ const QuizQuestion = ({ userId }) => {
     return shuffled.slice(0, 4)
   }
 
-  const questions = Object.fromEntries(
+  const [fetchedQuestions, setFetchedQuestions] = useState(null)
+
+  useEffect(() => {
+    let isMounted = true
+    getQuestions().then(({ questions }) => {
+      if (!isMounted) return
+      const mapped = Object.fromEntries(
+        questions.map((q) => [q.id, { text: q.text, options: q.options }])
+      )
+      setFetchedQuestions(mapped)
+    })
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  const questions = fetchedQuestions || Object.fromEntries(
     Array.from({ length: totalQuestions }, (_, i) => [
       i + 1,
       {
@@ -178,6 +195,12 @@ const QuizQuestion = ({ userId }) => {
         e.preventDefault()
         e.stopPropagation()
         e.stopImmediatePropagation()
+        return
+      }
+
+      if (e.key === "Tab") {
+        e.preventDefault()
+        e.stopPropagation()
         return
       }
 
@@ -290,7 +313,7 @@ const QuizQuestion = ({ userId }) => {
               </svg>
               <span className="text-lg font-semibold text-gray-700">{formatTime(timeLeft)}</span>
             </div>
-            <button  onClick={() => navigate("/quiz/submit")}
+            <button  onClick={() => navigate("/submit")}
  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded transition-all">
               Submit Quiz
             </button>
