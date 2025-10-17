@@ -1,30 +1,21 @@
-// Simple mocked API layer for demo purposes
+import axios from 'axios';
 
-export function checkAccess() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const allowed = Math.random() < 0.6; // 60% chance allowed
-      resolve({ allowed });
-    }, 800);
-  });
-}
+const api = axios.create({
+  baseURL: 'http://localhost:8000/owasp-quiz', 
+  withCredentials: true, 
+});
 
-export function getQuestions() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const questions = Array.from({ length: 20 }, (_, i) => ({
-        id: i + 1,
-        text: `Question ${i + 1}: Why is HTTPS important?`,
-        options: [
-          "Encrypts data in transit",
-          "Improves SEO only",
-          "Caches client inputs",
-          "Manages server CPU",
-        ].sort(() => Math.random() - 0.5),
-      }));
-      resolve({ questions });
-    }, 700);
-  });
-}
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-
+export default api;
