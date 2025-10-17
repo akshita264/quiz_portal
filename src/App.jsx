@@ -7,7 +7,7 @@ import Login from "./auth/Login";
 import Signup from "./auth/Signup";
 import Quiz from "./Quiz";
 
-import PreQuizLayout from "./pages/quiz/preQuizSetup/prequizlayout";
+import PreQuizLayout from "./pages/quiz/preQuizSetup/prequizLayout";
 import InstructionsPage from "./pages/quiz/preQuizSetup/instructions";
 import PermissionsPage from "./pages/quiz/preQuizSetup/permissions";
 import CameraSetupPage from "./pages/quiz/preQuizSetup/camerasetup";
