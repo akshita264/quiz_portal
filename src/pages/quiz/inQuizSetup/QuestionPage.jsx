@@ -5,11 +5,13 @@ import { Bookmark } from "lucide-react"
 import axios from "axios"
 import { getQuestions } from "../../../services/api"
 import { useNavigate } from "react-router-dom";
+import QuizMonitor from "../../../components/QuizMonitor";
 
 const QuizQuestion = ({ userId }) => {
   const totalQuestions = 20
   const [currentQuestion, setCurrentQuestion] = useState(1)
   const [tabSwitchViolations, setTabSwitchViolations] = useState(0)
+  const [proctoringViolations, setProctoringViolations] = useState(0)
   const [tabSwitchWarning, setTabSwitchWarning] = useState(false)
   const [isQuizPaused, setIsQuizPaused] = useState(false)
   const [fullscreenExited, setFullscreenExited] = useState(false)
@@ -284,10 +286,24 @@ const QuizQuestion = ({ userId }) => {
       console.warn("Fullscreen request failed:", err)
     }
   }
+  
+  const handleProctoringViolation = (violation) => {
+    setProctoringViolations(prev => prev + 1);
+    console.warn('[PROCTORING] Violation detected:', violation);
+    
+    // You can add additional logic here, such as:
+    // - Logging to backend
+    // - Showing warnings to user
+    // - Auto-submitting quiz after too many violations
+  };
+  
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-50 select-none pointer-events-auto">
+      {/* Proctoring Monitor */}
+      <QuizMonitor onViolation={handleProctoringViolation} />
+      
       {/* Top Navbar */}
       <div className="bg-white border-b border-gray-300 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
@@ -296,8 +312,19 @@ const QuizQuestion = ({ userId }) => {
             <p className="text-sm text-gray-600">
               Question {currentQuestion} of {totalQuestions}
             </p>
-            {tabSwitchViolations > 0 && (
-              <p className="text-xs text-red-600 font-semibold mt-1">⚠️ Tab switches detected: {tabSwitchViolations}</p>
+            {(tabSwitchViolations > 0 || proctoringViolations > 0) && (
+              <div className="mt-1 space-y-0.5">
+                {tabSwitchViolations > 0 && (
+                  <p className="text-xs text-red-600 font-semibold">
+                    ⚠️ Tab switches: {tabSwitchViolations}
+                  </p>
+                )}
+                {proctoringViolations > 0 && (
+                  <p className="text-xs text-orange-600 font-semibold">
+                    👁️ Proctoring violations: {proctoringViolations}
+                  </p>
+                )}
+              </div>
             )}
           </div>
 
