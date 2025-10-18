@@ -2,49 +2,78 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Bookmark } from "lucide-react"
-import axios from "axios"
-import { getQuestions } from "../../../services/api"
 import { useNavigate } from "react-router-dom";
+import api from "../../../services/api"
 import QuizMonitor from "../../../components/QuizMonitor";
 
-const QuizQuestion = ({ userId }) => {
-  const totalQuestions = 20
-  const [currentQuestion, setCurrentQuestion] = useState(1)
+const QuizQuestion = () => {
+  const [questions, setQuestions] = useState([])
+  const [sessionId, setSessionId] = useState(null)
+  const [quizDuration, setQuizDuration] = useState(1800) // 30 minutes default
+  const [currentQuestion, setCurrentQuestion] = useState(0)
   const [tabSwitchViolations, setTabSwitchViolations] = useState(0)
   const [proctoringViolations, setProctoringViolations] = useState(0)
   const [tabSwitchWarning, setTabSwitchWarning] = useState(false)
   const [isQuizPaused, setIsQuizPaused] = useState(false)
   const [fullscreenExited, setFullscreenExited] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const hiddenButtonRef = useRef(null)
 
-  const [visited, setVisited] = useState(
-    Object.fromEntries(Array.from({ length: totalQuestions }, (_, i) => [i + 1, false])),
-  )
-  const [answers, setAnswers] = useState(
-    Object.fromEntries(Array.from({ length: totalQuestions }, (_, i) => [i + 1, null])),
-  )
-  const [bookmarked, setBookmarked] = useState(
-    Object.fromEntries(Array.from({ length: totalQuestions }, (_, i) => [i + 1, false])),
-  )
-  const [timeLeft, setTimeLeft] = useState(1788)
+  const [visited, setVisited] = useState({})
+  const [answers, setAnswers] = useState({})
+  const [bookmarked, setBookmarked] = useState({})
+  const [timeLeft, setTimeLeft] = useState(1800)
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const startQuiz = async () => {
       try {
-        const localData = localStorage.getItem(`quiz-progress-${userId}`)
-        if (localData) {
-          const parsed = JSON.parse(localData)
-          setAnswers(parsed.answers || {})
-          setBookmarked(parsed.bookmarked || {})
-          setVisited(parsed.visited || {})
-          setTimeLeft(parsed.timeLeft || 1800)
+        const quizId = localStorage.getItem('quizId')
+        if (!quizId) {
+          setError('No quiz ID found. Please start from instructions.')
+          setLoading(false)
+          return
+        }
+
+        const response = await api.post(`/quizzes/${quizId}/start`)
+        
+        if (response.data.statusCode === 200) {
+          const { sessionId: newSessionId, questions: quizQuestions } = response.data.data
+          setSessionId(newSessionId)
+          setQuestions(quizQuestions)
+          setTimeLeft(quizQuestions.length > 0 ? quizQuestions[0].durationSec || 1800 : 1800)
+          
+          // Initialize state based on questions
+          const initialVisited = {}
+          const initialAnswers = {}
+          const initialBookmarked = {}
+          
+          quizQuestions.forEach((q, index) => {
+            initialVisited[index] = false
+            initialAnswers[index] = null
+            initialBookmarked[index] = false
+            // Store question ID for submission
+            localStorage.setItem(`question_${index}_id`, q._id)
+          })
+          
+          setVisited(initialVisited)
+          setAnswers(initialAnswers)
+          setBookmarked(initialBookmarked)
+          
+          setLoading(false)
+        } else {
+          setError('Failed to start quiz. Please try again.')
+          setLoading(false)
         }
       } catch (err) {
-        console.error("Error fetching user quiz data:", err)
+        console.error("Error starting quiz:", err)
+        setError('An error occurred while starting the quiz.')
+        setLoading(false)
       }
     }
-    fetchUserData()
-  }, [userId])
+    
+    startQuiz()
+  }, [])
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -67,8 +96,7 @@ const QuizQuestion = ({ userId }) => {
         visited: updatedVisited,
         timeLeft: updatedTime,
       }
-      localStorage.setItem(`quiz-progress-${userId}`, JSON.stringify(progressData))
-      await axios.post(`/api/quiz/${userId}/save-progress`, progressData)
+      localStorage.setItem('quiz-progress', JSON.stringify(progressData))
     } catch (err) {
       console.error("Error saving progress:", err)
     }
@@ -80,51 +108,6 @@ const QuizQuestion = ({ userId }) => {
     }, 5000)
     return () => clearInterval(interval)
   }, [answers, bookmarked, visited, timeLeft])
-
-  const allOptions = [
-    "To make websites load faster",
-    "To encrypt data transmitted between client and server",
-    "To prevent websites from being cached",
-    "To improve SEO rankings",
-    "To enable secure communication",
-    "To verify website authenticity",
-    "To manage server resources",
-    "To reduce bandwidth usage",
-  ]
-
-  const getRandomOptions = (seed) => {
-    const shuffled = [...allOptions].sort(() => {
-      seed = (seed * 9301 + 49297) % 233280
-      return seed - 0.5
-    })
-    return shuffled.slice(0, 4)
-  }
-
-  const [fetchedQuestions, setFetchedQuestions] = useState(null)
-
-  useEffect(() => {
-    let isMounted = true
-    getQuestions().then(({ questions }) => {
-      if (!isMounted) return
-      const mapped = Object.fromEntries(
-        questions.map((q) => [q.id, { text: q.text, options: q.options }])
-      )
-      setFetchedQuestions(mapped)
-    })
-    return () => {
-      isMounted = false
-    }
-  }, [])
-
-  const questions = fetchedQuestions || Object.fromEntries(
-    Array.from({ length: totalQuestions }, (_, i) => [
-      i + 1,
-      {
-        text: `This is question ${i + 1}`,
-        options: getRandomOptions(i + 1),
-      },
-    ]),
-  )
 
   const currentQ = questions[currentQuestion]
   const selected = answers[currentQuestion]
@@ -299,6 +282,45 @@ const QuizQuestion = ({ userId }) => {
   
   const navigate = useNavigate();
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-24 w-24 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading quiz...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="bg-white p-8 rounded-xl shadow-md max-w-md w-full text-center">
+          <h2 className="text-2xl font-bold mb-2 text-red-600">Error</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={() => navigate('/quiz/instructions')} 
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Return to Instructions
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!questions || questions.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="bg-white p-8 rounded-xl shadow-md max-w-md w-full text-center">
+          <h2 className="text-2xl font-bold mb-2">No Questions Available</h2>
+          <p className="text-gray-600">There are no questions for this quiz.</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 select-none pointer-events-auto">
       {/* Proctoring Monitor */}
@@ -310,7 +332,7 @@ const QuizQuestion = ({ userId }) => {
           <div>
             <img src="/owasp_logo.png" alt="Logo" className="h-10 mb-2" />
             <p className="text-sm text-gray-600">
-              Question {currentQuestion} of {totalQuestions}
+              Question {currentQuestion + 1} of {questions.length}
             </p>
             {(tabSwitchViolations > 0 || proctoringViolations > 0) && (
               <div className="mt-1 space-y-0.5">
@@ -401,9 +423,9 @@ const QuizQuestion = ({ userId }) => {
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded">Single Choice</span>
-                  <span className="text-sm font-medium text-gray-700">1 point</span>
+                  <span className="text-sm font-medium text-gray-700">{currentQ.marks} points</span>
                 </div>
-                <h2 className="text-lg font-semibold text-gray-900">{currentQ.text}</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{currentQ.questionText}</h2>
               </div>
               <button
                 onClick={handleBookmark}
@@ -424,19 +446,19 @@ const QuizQuestion = ({ userId }) => {
                   key={idx}
                   className="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all"
                   style={{
-                    borderColor: selected === option ? "#3b82f6" : "#e5e7eb",
-                    backgroundColor: selected === option ? "#eff6ff" : "white",
+                    borderColor: selected === option.optionText ? "#3b82f6" : "#e5e7eb",
+                    backgroundColor: selected === option.optionText ? "#eff6ff" : "white",
                   }}
                 >
                   <input
                     type="radio"
                     name={`question-${currentQuestion}`}
-                    value={option}
-                    checked={selected === option}
+                    value={option.optionText}
+                    checked={selected === option.optionText}
                     onChange={(e) => handleSelect(e.target.value)}
                     className="w-4 h-4 cursor-pointer"
                   />
-                  <span className="ml-3 text-gray-700">{option}</span>
+                  <span className="ml-3 text-gray-700">{option.optionText}</span>
                 </label>
               ))}
             </div>
@@ -475,7 +497,8 @@ const QuizQuestion = ({ userId }) => {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h3 className="text-sm font-semibold text-gray-900 mb-4">Questions</h3>
             <div className="flex gap-2 flex-wrap">
-              {Array.from({ length: totalQuestions }, (_, i) => i + 1).map((q) => {
+              {questions.map((_, index) => {
+                const q = index
                 let bgClass = "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 if (answers[q] && bookmarked[q]) bgClass = "bg-purple-100 border-2 border-purple-400 text-purple-700"
                 else if (answers[q]) bgClass = "bg-green-100 text-green-700"
@@ -489,7 +512,7 @@ const QuizQuestion = ({ userId }) => {
                     onClick={() => setCurrentQuestion(q)}
                     className={`w-10 h-10 rounded font-medium transition-all ${bgClass}`}
                   >
-                    {q}
+                    {q + 1}
                   </button>
                 )
               })}

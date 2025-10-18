@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    rollNumber: '',
+    identifier: '', // Can be email OR rollNumber
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +27,7 @@ const Login = () => {
     setError('');
     setLoading(true);
 
-    if (!formData.rollNumber || !formData.password) {
+    if (!formData.identifier || !formData.password) {
       setError('Please fill in all fields');
       setLoading(false);
       return;
@@ -77,19 +77,19 @@ const Login = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Roll Number Field */}
+            {/* Email or Roll Number Field */}
             <div>
-              <label htmlFor="rollNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                Roll Number
+              <label htmlFor="identifier" className="block text-sm font-medium text-gray-700 mb-2">
+                Email or Roll Number
               </label>
               <input
-                id="rollNumber"
-                name="rollNumber"
+                id="identifier"
+                name="identifier"
                 type="text"
                 required
-                value={formData.rollNumber}
+                value={formData.identifier}
                 onChange={handleChange}
-                placeholder="Enter your roll number"
+                placeholder="Enter your email or roll number"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none"
               />
             </div>

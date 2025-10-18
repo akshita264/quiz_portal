@@ -32,14 +32,14 @@ export const AuthProvider = ({ children }) => {
     try {
       
       const response = await api.post('/auth/login', {
-        identifier: credentials.rollNumber,
+        identifier: credentials.identifier, // Can be email OR rollNumber
         password: credentials.password,
       });
 
-      if (response.data && response.data.success) {
+      if (response.data && response.data.statusCode === 200) {
         const { accessToken, user } = response.data.data;
         
-       
+        
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('user', JSON.stringify(user));
         
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
       // Make the API call to the signup endpoint
       const response = await api.post('/auth/signup', userData);
 
-      if (response.data && response.data.success) {
+      if (response.data && response.data.statusCode === 201) {
         const { accessToken, user } = response.data.data;
 
         localStorage.setItem('accessToken', accessToken);

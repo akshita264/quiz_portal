@@ -5,10 +5,10 @@ import { useAuth } from '../contexts/AuthContext';
 const Signup = () => {
   const [formData, setFormData] = useState({
     fullName: '',
-    rollNumber: '',
-    phoneNumber: '',
     email: '',
     password: '',
+    rollNumber: '',
+    phoneNumber: '',
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -31,10 +31,10 @@ const Signup = () => {
     setError('');
     setLoading(true);
 
-    const { fullName, rollNumber, phoneNumber, email, password } = formData;
+    const { fullName, email, password, rollNumber, phoneNumber } = formData;
 
     // Validation
-    if (!fullName || !rollNumber || !phoneNumber || !email || !password) {
+    if (!fullName || !email || !password || !rollNumber || !phoneNumber) {
       setError('Please fill in all fields');
       setLoading(false);
       return;

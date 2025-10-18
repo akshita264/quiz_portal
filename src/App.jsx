@@ -2,10 +2,8 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-import RequireInstructionsComplete from "./components/RequireInstructionsComplete";
 import Login from "./auth/Login";
 import Signup from "./auth/Signup";
-import Quiz from "./Quiz";
 
 import PreQuizLayout from "./pages/quiz/preQuizSetup/prequizLayout";
 import InstructionsPage from "./pages/quiz/preQuizSetup/instructions";
@@ -14,7 +12,6 @@ import CameraSetupPage from "./pages/quiz/preQuizSetup/camerasetup";
 import ReadyPage from "./pages/quiz/preQuizSetup/ready";
 import QuestionPage from "./pages/quiz/inQuizSetup/QuestionPage";
 import Submit from "./pages/quiz/inQuizSetup/Submit";
-import StartPage from "./pages/quiz/StartPage";
 
 function App() {
   return (
@@ -45,21 +42,13 @@ function App() {
             {/* Aliases to match required paths */}
             <Route path="/instructions" element={<Navigate to="/quiz/instructions" replace />} />
 
-            {/* Backend-gated start and questions */}
-            <Route
-              path="/start"
-              element={
-                <RequireInstructionsComplete>
-                  <StartPage />
-                </RequireInstructionsComplete>
-              }
-            />
+            {/* Quiz questions */}
             <Route
               path="/questions"
               element={
-                <RequireInstructionsComplete>
+                <ProtectedRoute>
                   <QuestionPage />
-                </RequireInstructionsComplete>
+                </ProtectedRoute>
               }
             />
             <Route path="/submit" element={<Submit />} />

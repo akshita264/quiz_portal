@@ -7,7 +7,7 @@ const InstructionsPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const QUIZ_ID = "YOUR_ACTUAL_QUIZ_ID_FROM_MONGODB"; 
+  const QUIZ_ID = "60d0fe4f5311236168a109cb"; // Replace with actual quiz ID from backend
 
   const handleContinue = async () => {
     setLoading(true);
@@ -17,7 +17,7 @@ const InstructionsPage = () => {
       
       const response = await api.post('/instructions', { quizId: QUIZ_ID });
 
-      if (response.data.success) {
+      if (response.data.statusCode === 200) {
         const { sessionId } = response.data.data;
         
         
@@ -25,7 +25,7 @@ const InstructionsPage = () => {
         localStorage.setItem('quizId', QUIZ_ID); 
         
         
-        navigate("/quiz/permissions");
+        navigate("/quiz/ready");
       } else {
         setError('Could not start a quiz session. Please try again.');
       }
