@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import api from "../services/api";
 
 const AuthContext = createContext();
 
@@ -16,9 +17,11 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in from localStorage
+   
+    const token = localStorage.getItem('accessToken');
     const savedUser = localStorage.getItem('user');
-    if (savedUser) {
+
+    if (token && savedUser) {
       setUser(JSON.parse(savedUser));
       setIsAuthenticated(true);
     }
@@ -27,86 +30,65 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      // Simulate API call
-      const response = await fetch("https://example.com/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(credentials),
+      
+      const response = await api.post('/auth/login', {
+        identifier: credentials.rollNumber,
+        password: credentials.password,
       });
 
-      if (response.ok) {
-        const userData = {
-          rollNumber: credentials.rollNumber,
-          loginTime: new Date().toISOString(),
-        };
+      if (response.data && response.data.success) {
+        const { accessToken, user } = response.data.data;
         
-        setUser(userData);
+       
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        setUser(user);
         setIsAuthenticated(true);
-        localStorage.setItem('user', JSON.stringify(userData));
         return { success: true };
-      } else {
-        return { success: false, error: 'Invalid credentials' };
       }
     } catch (error) {
-      // For demo purposes, accept any credentials
-      const userData = {
-        rollNumber: credentials.rollNumber,
-        loginTime: new Date().toISOString(),
-      };
-      
-      setUser(userData);
-      setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(userData));
-      return { success: true };
+      console.error("Login failed:", error);
+      const errorMessage = error.response?.data?.message || 'Invalid credentials';
+      return { success: false, error: errorMessage };
     }
   };
 
   const signup = async (userData) => {
     try {
-      // Simulate API call
-      const response = await fetch("https://example.com/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      });
+      // Make the API call to the signup endpoint
+      const response = await api.post('/auth/signup', userData);
 
-      if (response.ok) {
-        const newUser = {
-          rollNumber: userData.rollNumber,
-          email: userData.email,
-          signupTime: new Date().toISOString(),
-        };
+      if (response.data && response.data.success) {
+        const { accessToken, user } = response.data.data;
+
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('user', JSON.stringify(user));
         
-        setUser(newUser);
+        setUser(user);
         setIsAuthenticated(true);
-        localStorage.setItem('user', JSON.stringify(newUser));
         return { success: true };
-      } else {
-        return { success: false, error: 'Signup failed' };
       }
     } catch (error) {
-      // For demo purposes, accept any signup
-      const newUser = {
-        rollNumber: userData.rollNumber,
-        email: userData.email,
-        signupTime: new Date().toISOString(),
-      };
-      
-      setUser(newUser);
-      setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(newUser));
-      return { success: true };
+      console.error("Signup failed:", error);
+      const errorMessage = error.response?.data?.message || 'Signup failed';
+      return { success: false, error: errorMessage };
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-    localStorage.removeItem('user');
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+     
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem('user');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('sessionId'); 
+    }
   };
 
   const value = {

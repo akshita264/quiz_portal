@@ -1,12 +1,40 @@
-import React from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../../services/api.js"; // 1. Import your API service
 
 const InstructionsPage = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleContinue = () => {
-    localStorage.setItem('instructionsComplete', 'true');
-    navigate("/quiz/permissions");
+  const QUIZ_ID = "YOUR_ACTUAL_QUIZ_ID_FROM_MONGODB"; 
+
+  const handleContinue = async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      
+      const response = await api.post('/instructions', { quizId: QUIZ_ID });
+
+      if (response.data.success) {
+        const { sessionId } = response.data.data;
+        
+        
+        localStorage.setItem('sessionId', sessionId);
+        localStorage.setItem('quizId', QUIZ_ID); 
+        
+        
+        navigate("/quiz/permissions");
+      } else {
+        setError('Could not start a quiz session. Please try again.');
+      }
+    } catch (err) {
+      setError('An error occurred. Please check your connection and try again.');
+      console.error("Error creating session:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
