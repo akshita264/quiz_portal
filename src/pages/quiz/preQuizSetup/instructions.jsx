@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../../services/api.js"; // 1. Import your API service
+import { checkAccess } from "../../../services/api.js"; // 1. Import your API service
 
 const InstructionsPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const QUIZ_ID = "60d0fe4f5311236168a109cb"; // Replace with actual quiz ID from backend
+  const QUIZ_ID = "68ec712676aff2ddf3e3c0b5"; // Replace with actual quiz ID from backend
 
   const handleContinue = async () => {
     setLoading(true);
@@ -15,17 +15,17 @@ const InstructionsPage = () => {
 
     try {
       
-      const response = await api.post('/instructions', { quizId: QUIZ_ID });
+      const response = await checkAccess(QUIZ_ID);
 
-      if (response.data.statusCode === 200) {
-        const { sessionId } = response.data.data;
+      if (response.statusCode === 200) {
+        const { sessionId } = response.data;
         
         
         localStorage.setItem('sessionId', sessionId);
         localStorage.setItem('quizId', QUIZ_ID); 
         
         
-        navigate("/quiz/ready");
+        navigate("/quiz/permissions");
       } else {
         setError('Could not start a quiz session. Please try again.');
       }
