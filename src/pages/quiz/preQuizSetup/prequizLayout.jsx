@@ -20,25 +20,21 @@ const PreQuizLayout = () => {
       <header className="flex flex-col sm:flex-row items-center justify-between px-3 sm:px-4 md:px-6 py-3 sm:py-4 bg-white shadow-sm">
         {/* Left */}
         <div className="flex items-center space-x-2 sm:space-x-3 mb-2 sm:mb-0">
-          <h1 className="font-semibold text-base sm:text-lg md:text-xl text-gray-800">
-            OWASP Quiz Portal
-          </h1>
+          <img src="/owasp_logo.png" alt="Logo" className="h-10 mb-2 px-0" />
         </div>
 
         {/* Right Nav */}
-        <nav className="flex flex-wrap justify-center sm:justify-end space-x-3 sm:space-x-4 md:space-x-6 text-gray-700 font-medium text-xs sm:text-sm md:text-base">
+        {/* <nav className="flex flex-wrap justify-center sm:justify-end space-x-3 sm:space-x-4 md:space-x-6 text-gray-700 font-medium text-xs sm:text-sm md:text-base">
           <Link to="#" className="hover:text-blue-600 transition-colors">Dashboard</Link>
           <Link to="#" className="hover:text-blue-600 transition-colors">Questions</Link>
           <Link to="#" className="hover:text-blue-600 transition-colors">Attempts</Link>
           <span className="font-semibold text-blue-600">Profile</span>
-        </nav>
+        </nav> */}
       </header>
 
       {/* Page Content */}
       <main className="max-w-5xl mx-auto py-4 sm:py-6 md:py-8 lg:py-10 px-3 sm:px-4">
-        <Link to="/login" className="text-gray-600 text-xs sm:text-sm block mb-2 hover:text-blue-600 transition-colors">
-          ← Back
-        </Link>
+        
 
         <h2 className="text-lg sm:text-xl md:text-2xl font-bold mt-1 sm:mt-2">Pre-Quiz Setup</h2>
         <p className="text-gray-500 mb-4 sm:mb-6 md:mb-8 text-xs sm:text-sm md:text-base">

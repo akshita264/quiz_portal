@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { Bookmark } from "lucide-react"
 import { useNavigate } from "react-router-dom";
-import api from "../../../services/api"
+import { getQuestions } from "../../../services/api"
 import QuizMonitor from "../../../components/QuizMonitor";
 
 const QuizQuestion = () => {
@@ -35,10 +35,10 @@ const QuizQuestion = () => {
           return
         }
 
-        const response = await api.post(`/quizzes/${quizId}/start`)
+        const response = await getQuestions(quizId)
         
-        if (response.data.statusCode === 200) {
-          const { sessionId: newSessionId, questions: quizQuestions } = response.data.data
+        if (response.statusCode === 200) {
+          const { sessionId: newSessionId, questions: quizQuestions } = response.data
           setSessionId(newSessionId)
           setQuestions(quizQuestions)
           setTimeLeft(quizQuestions.length > 0 ? quizQuestions[0].durationSec || 1800 : 1800)
@@ -338,14 +338,14 @@ const QuizQuestion = () => {
               <div className="mt-1 space-y-0.5">
                 {tabSwitchViolations > 0 && (
                   <p className="text-xs text-red-600 font-semibold">
-                    ⚠️ Tab switches: {tabSwitchViolations}
+                    ⚠️ warning count : {tabSwitchViolations}
                   </p>
                 )}
-                {proctoringViolations > 0 && (
+                {/* {proctoringViolations > 0 && (
                   <p className="text-xs text-orange-600 font-semibold">
                     👁️ Proctoring violations: {proctoringViolations}
                   </p>
-                )}
+                )} */}
               </div>
             )}
           </div>

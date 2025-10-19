@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../../services/api";
+import { submitAnswers } from "../../../services/api";
 
 const Submit = () => {
   const [loading, setLoading] = useState(true);
@@ -40,12 +40,12 @@ const Submit = () => {
             };
           });
 
-        const response = await api.post(`/sessions/${sessionId}/submit`, {
+        const response = await submitAnswers(sessionId, {
           answers: submissionAnswers
         });
 
-        if (response.data.statusCode === 200) {
-          setResults(response.data.data);
+        if (response.statusCode === 200) {
+          setResults(response.data);
           setLoading(false);
         } else {
           setError('Failed to submit quiz. Please try again.');
