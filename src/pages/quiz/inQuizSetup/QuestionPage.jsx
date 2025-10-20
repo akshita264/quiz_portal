@@ -25,6 +25,8 @@ const QuizQuestion = () => {
   const [bookmarked, setBookmarked] = useState({})
   const [timeLeft, setTimeLeft] = useState(1800)
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const startQuiz = async () => {
       try {
@@ -43,7 +45,6 @@ const QuizQuestion = () => {
           setQuestions(quizQuestions)
           setTimeLeft(quizQuestions.length > 0 ? quizQuestions[0].durationSec || 1800 : 1800)
           
-          // Initialize state based on questions
           const initialVisited = {}
           const initialAnswers = {}
           const initialBookmarked = {}
@@ -52,7 +53,6 @@ const QuizQuestion = () => {
             initialVisited[index] = false
             initialAnswers[index] = null
             initialBookmarked[index] = false
-            // Store question ID for submission
             localStorage.setItem(`question_${index}_id`, q._id)
           })
           
@@ -176,16 +176,10 @@ const QuizQuestion = () => {
     document.addEventListener("contextmenu", handleRightClick)
 
     const handleKeyDown = (e) => {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" || e.key === "Tab") {
         e.preventDefault()
         e.stopPropagation()
         e.stopImmediatePropagation()
-        return
-      }
-
-      if (e.key === "Tab") {
-        e.preventDefault()
-        e.stopPropagation()
         return
       }
 
@@ -272,15 +266,22 @@ const QuizQuestion = () => {
   
   const handleProctoringViolation = (violation) => {
     setProctoringViolations(prev => prev + 1);
-    console.warn('[PROCTORING] Violation detected:', violation);
-    
-    // You can add additional logic here, such as:
-    // - Logging to backend
-    // - Showing warnings to user
-    // - Auto-submitting quiz after too many violations
   };
-  
-  const navigate = useNavigate();
+
+  // ✅ When proctoringViolations hits 10k, 15k, or 20k → add 1 tab-switch violation
+  useEffect(() => {
+    if ([10000, 15000, 20000].includes(proctoringViolations)) {
+      setTabSwitchViolations(prev => prev + 1)
+    }
+  }, [proctoringViolations])
+
+  // ✅ Auto-submit when tabSwitchViolations reaches 3
+  useEffect(() => {
+    if (tabSwitchViolations >= 3) {
+      console.warn("[SECURITY] Too many tab switch violations - auto submitting quiz")
+      navigate("/submit")
+    }
+  }, [tabSwitchViolations, navigate])
 
   if (loading) {
     return (
@@ -323,10 +324,8 @@ const QuizQuestion = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 select-none pointer-events-auto">
-      {/* Proctoring Monitor */}
       <QuizMonitor onViolation={handleProctoringViolation} />
       
-      {/* Top Navbar */}
       <div className="bg-white border-b border-gray-300 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
           <div>
@@ -341,11 +340,6 @@ const QuizQuestion = () => {
                     ⚠️ warning count : {tabSwitchViolations}
                   </p>
                 )}
-                {/* {proctoringViolations > 0 && (
-                  <p className="text-xs text-orange-600 font-semibold">
-                    👁️ Proctoring violations: {proctoringViolations}
-                  </p>
-                )} */}
               </div>
             )}
           </div>
@@ -362,8 +356,10 @@ const QuizQuestion = () => {
               </svg>
               <span className="text-lg font-semibold text-gray-700">{formatTime(timeLeft)}</span>
             </div>
-            <button  onClick={() => navigate("/submit")}
- className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded transition-all">
+            <button  
+              onClick={() => navigate("/submit")}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded transition-all"
+            >
               Submit Quiz
             </button>
           </div>
@@ -411,12 +407,9 @@ const QuizQuestion = () => {
         </div>
       )}
 
-      {/* Hidden button for auto-triggering fullscreen */}
       <button ref={hiddenButtonRef} onClick={enterFullscreen} style={{ display: "none" }} aria-hidden="true" />
 
-      {/* Main Content */}
       <div className="max-w-6xl mx-auto p-8 grid grid-cols-3 gap-8">
-        {/* Question Content */}
         <div className="col-span-2">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
             <div className="flex items-start justify-between mb-6">
@@ -463,59 +456,55 @@ const QuizQuestion = () => {
               ))}
             </div>
           </div>
+
+          <div className="flex justify-between mt-8">
+            <button
+              onClick={() => setCurrentQuestion((prev) => Math.max(0, prev - 1))}
+              disabled={currentQuestion === 0}
+              className="px-6 py-3 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setCurrentQuestion((prev) => Math.min(questions.length - 1, prev + 1))}
+              disabled={currentQuestion === questions.length - 1}
+              className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
 
-        {/* Sidebar (Legend + Navigation) */}
-        <div className="space-y-6">
+        <div className="col-span-1">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">Legend</h3>
-            <div className="space-y-3 text-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-6 h-6 rounded bg-gray-200"></div>
-                <span className="text-gray-700">Not visited</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-6 h-6 rounded bg-blue-100 border-2 border-blue-300"></div>
-                <span className="text-gray-700">Visited</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-6 h-6 rounded bg-green-100"></div>
-                <span className="text-gray-700">Answered</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-6 h-6 rounded bg-yellow-100 border-2 border-yellow-400"></div>
-                <span className="text-gray-700">Bookmarked</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-6 h-6 rounded bg-purple-100 border-2 border-purple-400"></div>
-                <span className="text-gray-700">Bookmarked & Answered</span>
-              </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Question Navigator</h3>
+            <div className="grid grid-cols-5 gap-2">
+              {questions.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentQuestion(index)}
+                  className={`w-10 h-10 rounded-lg font-medium text-sm border transition-all ${
+                    currentQuestion === index
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : visited[index]
+                      ? "bg-gray-100 text-gray-800 border-gray-300 hover:bg-gray-200"
+                      : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
             </div>
-          </div>
 
-          {/* Question Navigation */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">Questions</h3>
-            <div className="flex gap-2 flex-wrap">
-              {questions.map((_, index) => {
-                const q = index
-                let bgClass = "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                if (answers[q] && bookmarked[q]) bgClass = "bg-purple-100 border-2 border-purple-400 text-purple-700"
-                else if (answers[q]) bgClass = "bg-green-100 text-green-700"
-                else if (bookmarked[q]) bgClass = "bg-yellow-100 border-2 border-yellow-400 text-yellow-700"
-                else if (visited[q]) bgClass = "bg-blue-100 border-2 border-blue-300 text-blue-700"
-                if (q === currentQuestion) bgClass += " ring-2 ring-blue-500"
-
-                return (
-                  <button
-                    key={q}
-                    onClick={() => setCurrentQuestion(q)}
-                    className={`w-10 h-10 rounded font-medium transition-all ${bgClass}`}
-                  >
-                    {q + 1}
-                  </button>
-                )
-              })}
+            <div className="mt-6 space-y-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 bg-blue-600 rounded"></span>
+                <span>Current</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 bg-gray-200 border border-gray-300 rounded"></span>
+                <span>Visited</span>
+              </div>
             </div>
           </div>
         </div>

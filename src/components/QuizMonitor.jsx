@@ -174,11 +174,11 @@ export default function QuizMonitor({ onViolation }) {
         </div>
       )}
 
-      {/* Stats */}
+      {/* 
       <div className="px-3 py-2 bg-gray-50 border-t border-gray-200 flex justify-between text-xs">
         <span className="text-gray-600">Total Violations:</span>
         <span className="font-bold text-red-600">{violationCount}</span>
-      </div>
+      </div> */}
     </div>
   );
 }
