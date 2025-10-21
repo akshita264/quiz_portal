@@ -14,7 +14,7 @@ const QuizQuestion = () => {
   const [tabSwitchViolations, setTabSwitchViolations] = useState(0)
   const [proctoringViolations, setProctoringViolations] = useState(0)
   const [tabSwitchWarning, setTabSwitchWarning] = useState(false)
-  const [isQuizPaused, setIsQuizPaused] = useState(false)
+  const [isQuizPaused, setIsQuizPaused] = useState(false) 
   const [fullscreenExited, setFullscreenExited] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -26,6 +26,16 @@ const QuizQuestion = () => {
   const [timeLeft, setTimeLeft] = useState(1800)
 
   const navigate = useNavigate();
+
+  // ✅ Fisher–Yates shuffle function
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
 
   useEffect(() => {
     const startQuiz = async () => {
@@ -42,19 +52,23 @@ const QuizQuestion = () => {
         if (response.statusCode === 200) {
           const { sessionId: newSessionId, questions: quizQuestions } = response.data
           setSessionId(newSessionId)
-          setQuestions(quizQuestions)
-          setTimeLeft(quizQuestions.length > 0 ? quizQuestions[0].durationSec || 1800 : 1800)
+          const randomizedQuestions = shuffleArray(quizQuestions);
+
+          setQuestions(randomizedQuestions)
+          setTimeLeft(randomizedQuestions.length > 0 ? randomizedQuestions[0].durationSec || 1800 : 1800)
+
           
           const initialVisited = {}
           const initialAnswers = {}
           const initialBookmarked = {}
           
-          quizQuestions.forEach((q, index) => {
+         randomizedQuestions.forEach((q, index) => {
             initialVisited[index] = false
             initialAnswers[index] = null
             initialBookmarked[index] = false
             localStorage.setItem(`question_${index}_id`, q._id)
           })
+
           
           setVisited(initialVisited)
           setAnswers(initialAnswers)

@@ -31,29 +31,30 @@ const Submit = () => {
         // Convert answers to backend format
         const submissionAnswers = Object.entries(answers)
           .filter(([_, answer]) => answer !== null)
-          .map(([questionIndex, selectedOption]) => {
-            // Get question ID from questions array if available
-            const questionId = localStorage.getItem(`question_${questionIndex}_id`) || `question_${questionIndex}`;
-            return {
-              questionId: questionId,
-              selectedOption: selectedOption
-            };
-          });
+          .map(([questionIndex, selectedOption]) => ({
+            questionId: localStorage.getItem(`question_${questionIndex}_id`), 
+            selectedOption: selectedOption
+          }));
 
         const response = await submitAnswers(sessionId, {
           answers: submissionAnswers
         });
 
         if (response.statusCode === 200) {
-          setResults(response.data);
-          setLoading(false);
+          setResults({
+            score: response.data.score,
+            results: response.data.results
+          });
+          // Clear quiz progress from localStorage after successful submission
+          localStorage.removeItem('quiz-progress');
+          localStorage.removeItem('sessionId');
         } else {
           setError('Failed to submit quiz. Please try again.');
-          setLoading(false);
         }
       } catch (err) {
         console.error("Error submitting quiz:", err);
         setError('An error occurred while submitting the quiz.');
+      } finally {
         setLoading(false);
       }
     };
@@ -107,14 +108,11 @@ const Submit = () => {
         {results && (
           <div className="mb-6">
             <div className="bg-green-50 border border-green-200 rounded-md p-6 text-center">
-              <p className="text-2xl font-bold text-green-600 mb-2">
-                Score: {results.score}
-              </p>
               <p className="text-lg text-gray-700 mb-3">
                 🎉 Thank you for submitting the quiz!
               </p>
               <p className="text-gray-600">
-                Your responses have been recorded successfully. <br/>Please stay tuned,
+                Your responses have been recorded successfully. <br />Please stay tuned,
                 results will be announced soon.
               </p>
             </div>
@@ -122,7 +120,7 @@ const Submit = () => {
         )}
 
         <div className="text-center mt-10 text-sm text-gray-500">
-          You may now close this tab or return to the dashboard.
+          You may now close this tab.
         </div>
       </div>
     </div>
