@@ -36,9 +36,11 @@ const Submit = () => {
             selectedOption: selectedOption
           }));
 
-        const response = await submitAnswers(sessionId, {
-          answers: submissionAnswers
-        });
+        // const response = await submitAnswers(sessionId, {
+        //   answers: submissionAnswers
+        // });
+
+        const response = await submitAnswers(sessionId, submissionAnswers);
 
         if (response.statusCode === 200) {
           setResults({
