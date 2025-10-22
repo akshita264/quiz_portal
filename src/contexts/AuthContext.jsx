@@ -17,7 +17,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-   
     const token = localStorage.getItem('accessToken');
     const savedUser = localStorage.getItem('user');
 
@@ -30,19 +29,17 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      
-      const response = await api.post('/auth/login', {
+      const response = await api.post('/owasp-quiz/auth/login', {
         identifier: credentials.identifier, // Can be email OR rollNumber
         password: credentials.password,
       });
 
       if (response.data && response.data.statusCode === 200) {
         const { accessToken, user } = response.data.data;
-        
-        
+
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('user', JSON.stringify(user));
-        
+
         setUser(user);
         setIsAuthenticated(true);
         return { success: true };
@@ -56,15 +53,14 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (userData) => {
     try {
-      // Make the API call to the signup endpoint
-      const response = await api.post('/auth/signup', userData);
+      const response = await api.post('/owasp-quiz/auth/signup', userData);
 
       if (response.data && response.data.statusCode === 201) {
         const { accessToken, user } = response.data.data;
 
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('user', JSON.stringify(user));
-        
+
         setUser(user);
         setIsAuthenticated(true);
         return { success: true };
@@ -78,16 +74,15 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await api.post('/auth/logout');
+      await api.post('/owasp-quiz/auth/logout');
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
-     
       setUser(null);
       setIsAuthenticated(false);
       localStorage.removeItem('user');
       localStorage.removeItem('accessToken');
-      localStorage.removeItem('sessionId'); 
+      localStorage.removeItem('sessionId');
     }
   };
 
