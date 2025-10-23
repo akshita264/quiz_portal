@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import owaspLogo from '/src/assets/owasp_logo.png';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -58,7 +59,7 @@ const Login = () => {
             <div className="">
               <img
                 className="h-20 items-center mx-auto mb-2"
-                src="/owasp_logo.png"
+                src={owaspLogo}
                 alt="Logo"
               />
               
