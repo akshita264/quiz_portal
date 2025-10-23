@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://quizbackend-production-aaf3.up.railway.app/owasp-quiz',
+  baseURL: import.meta.env.VITE_API_BASE_URL ,
   withCredentials: true, 
 });
 
