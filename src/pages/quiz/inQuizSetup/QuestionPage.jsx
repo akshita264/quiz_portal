@@ -5,6 +5,7 @@ import { Bookmark } from "lucide-react"
 import { useNavigate } from "react-router-dom";
 import { getQuestions } from "../../../services/api"
 import QuizMonitor from "../../../components/QuizMonitor";
+import owaspLogo from '/src/assets/owasp_logo.png'; 
 
 const QuizQuestion = () => {
   const [questions, setQuestions] = useState([])
@@ -398,7 +399,7 @@ useEffect(() => {
       <div className="bg-white border-b border-gray-300 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
           <div>
-            <img src="/owasp_logo.png" alt="Logo" className="h-10 mb-2" />
+            <img src={owaspLogo} alt="Logo" className="h-10 mb-2" />
             <p className="text-sm text-gray-600">
               Question {currentQuestion + 1} of {questions.length}
             </p>
