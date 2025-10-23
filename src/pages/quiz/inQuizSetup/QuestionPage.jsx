@@ -7,6 +7,33 @@ import { getQuestions } from "../../../services/api"
 import QuizMonitor from "../../../components/QuizMonitor";
 import owaspLogo from '/src/assets/owasp_logo.png'; 
 
+
+// 🧩 Added popup component
+const ConfirmNextPopup = ({ onConfirm, onCancel }) => (
+  <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-[9999]">
+    <div className="bg-white rounded-lg shadow-2xl p-8 max-w-md text-center">
+      <h2 className="text-2xl font-bold text-gray-900 mb-3">Move to Next Question?</h2>
+      <p className="text-1xl text-gray-700 dark:text-gray-800 mb-6">
+        You <span className="text-red-600 font-semibold">cannot go back</span> or revisit previous questions once you move forward.
+      </p>
+      <div className="flex justify-between gap-4">
+        <button
+          onClick={onCancel}
+          className="w-1/2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 rounded-lg"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={onConfirm}
+          className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg"
+        >
+          Yes, Next
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
 const QuizQuestion = () => {
   const [questions, setQuestions] = useState([])
   const [sessionId, setSessionId] = useState(null)
@@ -22,6 +49,7 @@ const QuizQuestion = () => {
   const hiddenButtonRef = useRef(null)
   const [questionTimer, setQuestionTimer] = useState(90); // 1 min 30 sec per question
   const questionTimerRef = useRef(null);
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
 
   const [visited, setVisited] = useState({})
@@ -520,13 +548,22 @@ useEffect(() => {
           <div className="flex justify-between mt-8">
             <button></button>
             <button
-              onClick={() => setCurrentQuestion((prev) => Math.min(questions.length - 1, prev + 1))}
+              onClick={() => setShowConfirmPopup(true)}
               disabled={currentQuestion === questions.length - 1}
-              className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 cursor-not-allowed"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md disabled:opacity-50 transition-all"
             >
-              Next
+              Next →
             </button>
           </div>
+          {showConfirmPopup && (
+  <ConfirmNextPopup
+    onConfirm={() => {
+      setShowConfirmPopup(false);
+      setCurrentQuestion((prev) => Math.min(questions.length - 1, prev + 1));
+    }}
+    onCancel={() => setShowConfirmPopup(false)}
+  />
+)}
 
 
         </div>
