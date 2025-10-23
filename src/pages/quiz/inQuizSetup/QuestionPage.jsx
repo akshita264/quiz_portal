@@ -91,18 +91,18 @@ const QuizQuestion = () => {
     startQuiz()
   }, [])
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0))
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [])
+  // useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0))
+  //   }, 1000)
+  //   return () => clearInterval(timer)
+  // }, [])
 
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, "0")}`
-  }
+  // const formatTime = (seconds) => {
+  //   const mins = Math.floor(seconds / 60)
+  //   const secs = seconds % 60
+  //   return `${mins}:${secs.toString().padStart(2, "0")}`
+  // }
 
   const saveProgress = async (updatedAnswers, updatedVisited, updatedTime) => {
     try {
@@ -243,7 +243,7 @@ useEffect(() => {
       }
 
       if (
-        e.key === "F12" ||
+        e.key === "F12" || e.key === "F11" || e.tabKey|| e.altKey||
         (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) ||
         (e.ctrlKey && (e.key === "U" || e.key === "C" || e.key === "V" || e.key === "S")) ||
         (e.metaKey && e.altKey && (e.key === "I" || e.key === "J"))
@@ -329,7 +329,7 @@ useEffect(() => {
 
   // ✅ When proctoringViolations hits 4k, 8k, or 12k → add 1 tab-switch violation
   useEffect(() => {
-    if ([4000, 8000, 12000].includes(proctoringViolations)) {
+    if ([2000, 4000, 8000].includes(proctoringViolations)) {
       setTabSwitchViolations(prev => prev + 1)
     }
   }, [proctoringViolations])
@@ -424,7 +424,7 @@ useEffect(() => {
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span className="text-lg font-semibold text-gray-700">{formatTime(timeLeft)}</span>
+              <span className="text-lg font-semibold text-gray-700 px-3">{formatQuestionTime(questionTimer)}</span>
             </div>
             <button  
               onClick={() => navigate("/submit")}
@@ -486,7 +486,7 @@ useEffect(() => {
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded">Single Choice</span>
-                  <span className="text-sm font-medium text-gray-700">{currentQ.marks} points / {formatQuestionTime(questionTimer)}</span>
+                  <span className="text-sm font-medium text-gray-700">{currentQ.marks} points</span>
                 </div>
                 <h2 className="text-lg font-semibold text-gray-900">{currentQ.questionText}</h2>
               </div>
@@ -516,14 +516,9 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* <div className="flex justify-between mt-8">
-            <button
-              onClick={() => setCurrentQuestion((prev) => Math.max(0, prev - 1))}
-              disabled={currentQuestion === 0}
-              className="px-6 py-3 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 disabled:opacity-50 cursor-not-allowed"
-            >
-              Previous
-            </button>
+
+          <div className="flex justify-between mt-8">
+            <button></button>
             <button
               onClick={() => setCurrentQuestion((prev) => Math.min(questions.length - 1, prev + 1))}
               disabled={currentQuestion === questions.length - 1}
@@ -531,7 +526,9 @@ useEffect(() => {
             >
               Next
             </button>
-          </div> */}
+          </div>
+
+
         </div>
 
         <div className="col-span-1">
