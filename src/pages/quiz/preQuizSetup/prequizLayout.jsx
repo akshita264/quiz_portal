@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import owaspLogo from '/src/assets/owasp_logo.png';
 
 const PreQuizLayout = () => {
   const location = useLocation();
@@ -20,7 +21,7 @@ const PreQuizLayout = () => {
       <header className="flex flex-col sm:flex-row items-center justify-between px-3 sm:px-4 md:px-6 py-3 sm:py-4 bg-white shadow-sm">
         {/* Left */}
         <div className="flex items-center space-x-2 sm:space-x-3 mb-2 sm:mb-0">
-          <img src="/owasp_logo.png" alt="Logo" className="h-10 mb-2 px-0" />
+          <img src={owaspLogo} alt="Logo" className="h-10 mb-2 px-0" />
         </div>
 
         {/* Right Nav */}
