@@ -160,6 +160,7 @@ export default function CameraSetupPage() {
             <li>Position yourself in the center of the frame</li>
             <li>Ensure your face is clearly visible</li>
             <li>Make sure the lighting is good</li>
+            <li>Please ensure that shoulders are visible</li>
             <li>Remove any hats or sunglasses</li>
             <li>Only ONE person should be visible in the frame</li>
             <li>Remove all electronic devices (phones, tablets, etc.)</li>
@@ -179,14 +180,6 @@ export default function CameraSetupPage() {
           >
             {isLoading ? 'Loading Detection Models...' : 'Continue to Quiz'}
           </button>
-        </div>
-
-        {/* Privacy Notice */}
-        <div className="mt-6 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-          <p className="text-xs text-gray-600 text-center">
-            🔒 <strong>Privacy Notice:</strong> All detection runs locally in your browser. 
-            No images or videos are stored, uploaded, or transmitted to any server.
-          </p>
         </div>
       </div>
     </div>
