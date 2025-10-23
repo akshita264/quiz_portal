@@ -55,14 +55,12 @@ const Signup = () => {
       return;
     }
 
-    // Roll number validation (must start with 1025 and be exactly 10 digits)
-    const rollRegex = /^1025\d{6}$/;
-    if (!rollRegex.test(rollNumber)) {
-      setError('Enter a valid roll number');
-      setLoading(false);
-      return;
-    }
-
+const rollRegex = /^[0-9]+$/;
+if (!rollRegex.test(rollNumber)) {
+  setError('Roll number must contain only numbers');
+  setLoading(false);
+  return;
+}
     // Phone number validation (10 digits, numeric)
     const phoneRegex = /^[6-9]\d{9}$/;
     if (!phoneRegex.test(phoneNumber)) {

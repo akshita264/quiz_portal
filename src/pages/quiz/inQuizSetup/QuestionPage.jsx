@@ -357,7 +357,7 @@ useEffect(() => {
 
   // ✅ When proctoringViolations hits 4k, 8k, or 12k → add 1 tab-switch violation
   useEffect(() => {
-    if ([2000, 4000, 8000].includes(proctoringViolations)) {
+    if ([3000, 6000, 9000].includes(proctoringViolations)) {
       setTabSwitchViolations(prev => prev + 1)
     }
   }, [proctoringViolations])

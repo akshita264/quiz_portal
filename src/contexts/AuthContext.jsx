@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      const response = await api.post('/owasp-quiz/auth/login', {
+      const response = await api.post('/auth/login', {
         identifier: credentials.identifier, // Can be email OR rollNumber
         password: credentials.password,
       });
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (userData) => {
     try {
-      const response = await api.post('/owasp-quiz/auth/signup', userData);
+      const response = await api.post('/auth/signup', userData);
 
       if (response.data && response.data.statusCode === 201) {
         const { accessToken, user } = response.data.data;
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await api.post('/owasp-quiz/auth/logout');
+      await api.post('/auth/logout');
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {

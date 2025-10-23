@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL ,
   withCredentials: true, 
 });
 
@@ -22,7 +22,7 @@ api.interceptors.request.use(
 // Authentication Functions
 export const signup = async (userData) => {
   try {
-    const response = await api.post('/owasp-quiz/auth/signup', userData);
+    const response = await api.post('/auth/signup', userData);
     return response.data;
   } catch (error) {
     throw error;
@@ -31,7 +31,7 @@ export const signup = async (userData) => {
 
 export const login = async (credentials) => {
   try {
-    const response = await api.post('/owasp-quiz/auth/login', credentials);
+    const response = await api.post('/auth/login', credentials);
     return response.data;
   } catch (error) {
     throw error;
@@ -40,7 +40,7 @@ export const login = async (credentials) => {
 
 export const logout = async () => {
   try {
-    const response = await api.post('/owasp-quiz/auth/logout');
+    const response = await api.post('/auth/logout');
     return response.data;
   } catch (error) {
     throw error;
@@ -50,7 +50,7 @@ export const logout = async () => {
 // Quiz Functions
 export const checkAccess = async (quizId) => {
   try {
-    const response = await api.post('/owasp-quiz/instructions', { quizId });
+    const response = await api.post('/instructions', { quizId });
     return response.data;
   } catch (error) {
     throw error;
@@ -59,7 +59,7 @@ export const checkAccess = async (quizId) => {
 
 export const getQuestions = async (quizId) => {
   try {
-    const response = await api.post(`/owasp-quiz/quizzes/${quizId}/start`);
+    const response = await api.post(`/quizzes/${quizId}/start`);
     return response.data;
   } catch (error) {
     throw error;
@@ -68,7 +68,7 @@ export const getQuestions = async (quizId) => {
 
 export const submitAnswers = async (sessionId, answers) => {
   try {
-    const response = await api.post(`/owasp-quiz/sessions/${sessionId}/submit`, { answers });
+    const response = await api.post(`/sessions/${sessionId}/submit`, { answers });
     return response.data;
   } catch (error) {
     throw error;
