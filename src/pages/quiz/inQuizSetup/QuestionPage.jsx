@@ -91,18 +91,18 @@ const QuizQuestion = () => {
     startQuiz()
   }, [])
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0))
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [])
+  // useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0))
+  //   }, 1000)
+  //   return () => clearInterval(timer)
+  // }, [])
 
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, "0")}`
-  }
+  // const formatTime = (seconds) => {
+  //   const mins = Math.floor(seconds / 60)
+  //   const secs = seconds % 60
+  //   return `${mins}:${secs.toString().padStart(2, "0")}`
+  // }
 
   const saveProgress = async (updatedAnswers, updatedVisited, updatedTime) => {
     try {
@@ -243,7 +243,7 @@ useEffect(() => {
       }
 
       if (
-        e.key === "F12" ||
+        e.key === "F12" || e.key === "F11" || e.tabKey|| e.altKey||
         (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) ||
         (e.ctrlKey && (e.key === "U" || e.key === "C" || e.key === "V" || e.key === "S")) ||
         (e.metaKey && e.altKey && (e.key === "I" || e.key === "J"))
