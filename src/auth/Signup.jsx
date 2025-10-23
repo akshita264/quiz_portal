@@ -34,22 +34,37 @@ const Signup = () => {
 
     const { fullName, email, password, rollNumber, phoneNumber } = formData;
 
-    // Validation
+    // Basic validation
     if (!fullName || !email || !password || !rollNumber || !phoneNumber) {
       setError('Please fill in all fields');
       setLoading(false);
       return;
     }
 
+    // Password validation
     if (password.length < 6) {
       setError('Password must be at least 6 characters long');
       setLoading(false);
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address');
+    // Email validation (must end with _be25@thapar.edu)
+    if (!email.toLowerCase().endsWith('_be25@thapar.edu')) {
+      setError('Enter your @thapar.edu email');
+      setLoading(false);
+      return;
+    }
+
+const rollRegex = /^[0-9]+$/;
+if (!rollRegex.test(rollNumber)) {
+  setError('Roll number must contain only numbers');
+  setLoading(false);
+  return;
+}
+    // Phone number validation (10 digits, numeric)
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(phoneNumber)) {
+      setError('Enter a valid phone number (10 digits, numeric only)');
       setLoading(false);
       return;
     }
@@ -73,11 +88,7 @@ const Signup = () => {
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <img
-            className="h-20 mx-auto mb-2"
-            src={owaspLogo}
-            alt="Logo"
-          />
+          <img className="h-20 mx-auto mb-2" src={owaspLogo} alt="Logo" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Sign Up</h2>
           <p className="text-gray-600">
             Join the OWASP Student Chapter recruitment quiz
@@ -95,10 +106,7 @@ const Signup = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Full Name */}
             <div>
-              <label
-                htmlFor="fullName"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
                 Full Name
               </label>
               <input
@@ -115,10 +123,7 @@ const Signup = () => {
 
             {/* Roll Number */}
             <div>
-              <label
-                htmlFor="rollNumber"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="rollNumber" className="block text-sm font-medium text-gray-700 mb-2">
                 Roll Number
               </label>
               <input
@@ -135,10 +140,7 @@ const Signup = () => {
 
             {/* Phone Number */}
             <div>
-              <label
-                htmlFor="phoneNumber"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">
                 Phone Number
               </label>
               <input
@@ -155,10 +157,7 @@ const Signup = () => {
 
             {/* Email */}
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email Address
               </label>
               <input
@@ -175,10 +174,7 @@ const Signup = () => {
 
             {/* Password */}
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
               <div className="relative">
